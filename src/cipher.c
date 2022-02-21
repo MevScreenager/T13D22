@@ -5,43 +5,50 @@
 
 void readFile(FILE *fp, char* name);
 void writeFile(FILE *fp, char* name);
-void encript(char d_name[260], int t);
-void readDir(DIR *dir, char* namedir);
+void encript(char d_name[260], char namedir[2600], int t);
+int readDir(DIR *dir, char* namedir);
 
 int main() {
     // #ifdef CIPHER
     DIR *dir;
     FILE *fp = NULL;
     int n, work = 1, name_size = 260, yes = 0;
-    char name[name_size];
-    char namedir[name_size];
+    char name[name_size], c;
+    char namedir[2600];
     while (work) {
         scanf("%d", &n);
-        getchar();
+        // getchar();
         switch (n) {
             case 1:
+                scanf("%s", name);
                 readFile(fp, name);  // пуст или не существвует
                 yes = 1;
-                printf("\n");
+                // printf("===== end 1 =====\n");
                 break;
             case 2:
                 if (!yes) {
                     printf("n/a\n");
                     break;
                 }
+                readFile(fp, name);
                 writeFile(fp, name);
+                // printf("===== end 2 =====\n");
                 break;
             case 3:
                 readDir(dir, namedir);
-                printf("\n");
+                // printf("\n");
+                // printf("===== end 3 =====\n");
                 break;
             case -1:
                 work = 0;
                 break;
             default:
+                c = getc(stdin);
+                while (c != EOF && c != '\n' && c != ' ') {
+                    c = getc(stdin);
+                }
                 printf("n/a\n");
-                //getchar();
-                exit(1);
+                // printf("===== end d =====\n");
         }
     }
     // #endif  // CIPHER
@@ -50,10 +57,8 @@ int main() {
 
 void readFile(FILE *fp, char* name) {
     char c;
-    scanf("%s", name);
-    //getchar();
     if ((fp = fopen(name, "r")) == NULL) {
-        printf("n/a\n");
+        printf("n/a");
         getchar();
     } else {
         for (; (c = fgetc(fp)) != EOF;) {
@@ -62,11 +67,12 @@ void readFile(FILE *fp, char* name) {
         fclose(fp);
         getchar();
     }
+    printf("\n");
 }
 
 void writeFile(FILE *fp, char* name) {
     if ((fp = fopen(name, "a")) == NULL) {
-        printf("n/a\n");
+        printf("n/a");
         getchar();
     } else {
         char string[10000], c;
@@ -75,34 +81,40 @@ void writeFile(FILE *fp, char* name) {
             string[i] = c;
         fputs(string, fp);
         fclose(fp);
-        getchar();
     }
+    readFile(fp, name);
+    printf("\n");
 }
 
-void readDir(DIR *dir, char* namedir) {
+int readDir(DIR *dir, char* namedir) {
     struct dirent *entry;
-    char name[260];
+    char name[260], namedircp[2600];
     int t;
     scanf("%s", namedir);
-    getchar();
-    if (!scanf("%d", &t)) {
-        printf("n/a\n");
-        getchar();
-        return;
-    }
-    getchar();
+    // getchar();
     if ((dir = opendir(namedir)) == NULL) {
-        printf("n/a\n");
-        getchar();
+        printf("n/adiiiiiie\n");
+        strcpy(namedir, namedircp);
+        return 0;
     } else {
+        scanf("%d", &t);
+        strcpy(namedircp, namedir);
         while ((entry = readdir(dir)) != NULL) {
-            encript(entry->d_name, t);
+            // printf("%s", entry->d_name);
+            if (*(entry->d_name) != '.') {
+                encript(entry->d_name, namedir, t);
+                strcpy(namedir, namedircp);
+            }
         }
+        closedir(dir);
     }
-
+    printf("\n");
+    return 1;
 }
 
-void encript(char d_name[260], int t) {
+void encript(char d_name[260], char namedir[2600], int t) {
+    strcat(namedir, d_name);
+    // printf("%s\n", namedir);
     FILE *fp, *fpp;
     for (int i = 0; d_name[i]; i++) {
         // if (d_name[i] == '.' && d_name[i + 1] == 't') {
@@ -117,9 +129,10 @@ void encript(char d_name[260], int t) {
         // }
 
         if (d_name[i] == '.' && d_name[i + 1] == 't') {
+            // printf("%s\n", d_name);
             int size = 0;
-            if ((fp = fopen(d_name, "r")) == NULL) {
-                printf("n/a\n");
+            if ((fp = fopen(namedir, "r")) == NULL) {
+                // printf("n/a\n");
                 getchar();
             } else {
                 char c;
@@ -130,13 +143,13 @@ void encript(char d_name[260], int t) {
                 fclose(fp);
                 fclose(fpp);
                 fpp = fopen("HELP.txt", "r");
-                fp = fopen(d_name, "w");
+                fp = fopen(namedir, "w");
                 for (; (c = fgetc(fpp)) != EOF;) {
                     fputc(c + t, fp);
                 }
                 fclose(fp);
                 fclose(fpp);
-                getchar();
+                // getchar();
             }
         }
     }
