@@ -1,6 +1,6 @@
-#ifndef M1_H
-#define M1_H
+#ifndef SRC_AI_MODULES_M1_H_
+#define SRC_AI_MODULES_M1_H_
 
 void m1_f1();
 
-#endif
+#endif  // SRC_AI_MODULES_M1_H_
