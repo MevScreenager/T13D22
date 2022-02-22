@@ -3,64 +3,59 @@
 #include <dirent.h>
 #include <string.h>
 
-void readFile(FILE *fp, char* name);
+void readFile(FILE *fp, char* name, int* yes);
 void writeFile(FILE *fp, char* name);
 void encript(char d_name[260], char namedir[2600], int t);
 int readDir(DIR *dir, char* namedir);
 
 int main() {
     // #ifdef CIPHER
-    DIR *dir;
+    DIR *dir = NULL;
     FILE *fp = NULL;
     int n, work = 1, name_size = 260, yes = 0;
     char name[name_size], c;
     char namedir[2600];
     while (work) {
+        n = 0;
         scanf("%d", &n);
         // getchar();
-        switch (n) {
-            case 1:
-                scanf("%s", name);
-                readFile(fp, name);  // пуст или не существвует
-                yes = 1;
-                // printf("===== end 1 =====\n");
-                break;
-            case 2:
-                if (!yes) {
-                    printf("n/a\n");
-                    break;
-                }
-                readFile(fp, name);
+        if (n == 1) {
+            scanf("%s", name);
+            readFile(fp, name, &yes);  // пуст или не существвует
+            // yes = 1;
+            }
+        else if (n == 2) {
+            if (yes) {
                 writeFile(fp, name);
-                // printf("===== end 2 =====\n");
-                break;
-            case 3:
-                readDir(dir, namedir);
-                // printf("\n");
-                // printf("===== end 3 =====\n");
-                break;
-            case -1:
-                work = 0;
-                break;
-            default:
-                c = getc(stdin);
-                while (c != EOF && c != '\n' && c != ' ') {
-                    c = getc(stdin);
-                }
+            } else {
                 printf("n/a\n");
-                // printf("===== end d =====\n");
+            }
+        }
+        else if (n == 3) {
+            readDir(dir, namedir);
+        }
+        else if (n == -1) {
+            work = 0;
+        }
+        else {
+            c = getc(stdin);
+            while (c != EOF && c != '\n' && c != ' ') {
+                c = getc(stdin);
+            }
+            printf("n/a\n");
         }
     }
     // #endif  // CIPHER
     return 0;
 }
 
-void readFile(FILE *fp, char* name) {
+void readFile(FILE *fp, char* name, int *yes) {
     char c;
     if ((fp = fopen(name, "r")) == NULL) {
         printf("n/a");
         getchar();
     } else {
+        *yes = 1;
         for (; (c = fgetc(fp)) != EOF;) {
             printf("%c", c);
         }
@@ -77,23 +72,26 @@ void writeFile(FILE *fp, char* name) {
     } else {
         char string[10000], c;
         scanf("%s", string);
-        for (int i = 0; (c = getchar()) != '\n'; i++)
-            string[i] = c;
         fputs(string, fp);
         fclose(fp);
+        fp = fopen(name, "r");
+        for (; (c = fgetc(fp)) != EOF;) {
+            printf("%c", c);
+        }
+        fclose(fp);
+        getchar();
     }
-    readFile(fp, name);
     printf("\n");
 }
 
 int readDir(DIR *dir, char* namedir) {
     struct dirent *entry;
-    char name[260], namedircp[2600];
+    char namedircp[2600];
     int t;
     scanf("%s", namedir);
     // getchar();
     if ((dir = opendir(namedir)) == NULL) {
-        printf("n/adiiiiiie\n");
+        printf("n/a\n");
         strcpy(namedir, namedircp);
         return 0;
     } else {
@@ -117,40 +115,40 @@ void encript(char d_name[260], char namedir[2600], int t) {
     // printf("%s\n", namedir);
     FILE *fp, *fpp;
     for (int i = 0; d_name[i]; i++) {
-        // if (d_name[i] == '.' && d_name[i + 1] == 't') {
-        //     if ((fp = fopen(d_name, "w")) == NULL) {
-        //         printf("n/a\n");
-        //         getchar();
-        //     } else {
-        //         fputs("", fp);
-        //         fclose(fp);
-        //         getchar();
-        //     }
-        // }
-
         if (d_name[i] == '.' && d_name[i + 1] == 't') {
-            // printf("%s\n", d_name);
-            int size = 0;
-            if ((fp = fopen(namedir, "r")) == NULL) {
-                // printf("n/a\n");
+            if ((fp = fopen(d_name, "w")) == NULL) {
+                printf("n/a\n");
                 getchar();
             } else {
-                char c;
-                fpp = fopen("HELP.txt", "w");
-                for (; (c = fgetc(fp)) != EOF;) {
-                    fputc(c, fpp);
-                }
+                fputs("", fp);
                 fclose(fp);
-                fclose(fpp);
-                fpp = fopen("HELP.txt", "r");
-                fp = fopen(namedir, "w");
-                for (; (c = fgetc(fpp)) != EOF;) {
-                    fputc(c + t, fp);
-                }
-                fclose(fp);
-                fclose(fpp);
-                // getchar();
+                getchar();
             }
         }
+
+        // if (d_name[i] == '.' && d_name[i + 1] == 't') {
+        //     // printf("%s\n", d_name);
+            
+        //     if ((fp = fopen(namedir, "r")) == NULL) {
+        //         // printf("n/a\n");
+        //         getchar();
+        //     } else {
+        //         char c;
+        //         fpp = fopen("HELP.txt", "w");
+        //         for (; (c = fgetc(fp)) != EOF;) {
+        //             fputc(c, fpp);
+        //         }
+        //         fclose(fp);
+        //         fclose(fpp);
+        //         fpp = fopen("HELP.txt", "r");
+        //         fp = fopen(namedir, "w");
+        //         for (; (c = fgetc(fpp)) != EOF;) {
+        //             fputc(c + t, fp);
+        //         }
+        //         fclose(fp);
+        //         fclose(fpp);
+        //         // getchar();
+        //     }
+        // }
     }
 }
