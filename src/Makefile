@@ -1,16 +1,3 @@
-# CFLAGS=-Wall -Werror -Wextra
-
-# cipher: logger.o cipher.o
-# 	gcc cipher.o logger.o -o ../build/cipher
-
-# logger.o: logger.c logger.h
-# 	gcc $(CFLAGS) logger.c -o logger.o
-
-# cipher.o:
-# 	gcc $(CFLAGS) cipher.c -o logger.o
-
-
-
 BUILDDIR = ../build/
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -std=c11
